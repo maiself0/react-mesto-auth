@@ -1,6 +1,8 @@
 import Header from "./Header.js";
 import Footer from "./Footer.js";
 import Main from "./Main.js";
+import Register from "./Register.js";
+import Login from "./Login.js";
 import { useEffect, useState } from "react";
 import ImagePopup from "./ImagePopup";
 import api from "../utils/api.js";
@@ -8,14 +10,15 @@ import { CurrentUserContext } from "./../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup.js";
-import {gsap} from 'gsap';
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ProtectedRoute from "./ProtectedRoute.js";
+
+import { Route, Redirect, Switch } from "react-router-dom";
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(null??false);
+  const [selectedCard, setSelectedCard] = useState(null ?? false);
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
 
@@ -25,19 +28,6 @@ function App() {
       .then(([userInfo, cards]) => {
         setCurrentUser(userInfo);
         setCards(cards);
-        gsap.registerPlugin(ScrollTrigger);
-        ScrollTrigger.batch(".element", {
-          interval: 0.1, // time window (in seconds) for batching to occur. The first callback that occurs (of its type) will start the timer, and when it elapses, any other similar callbacks for other targets will be batched into an array and fed to the callback. Default is 0.1
-          batchMax: 3,   // maximum batch size (targets)
-          onEnter: batch => gsap.to(batch, {autoAlpha: 1, stagger: 0.15, overwrite: true}),
-          onLeave: batch => gsap.set(batch, {autoAlpha: 0, overwrite: true}),
-          onEnterBack: batch => gsap.to(batch, {autoAlpha: 1, stagger: 0.15, overwrite: true}),
-          onLeaveBack: batch => gsap.set(batch, {autoAlpha: 0, overwrite: true})
-          // you can also define things like start, end, etc.
-        });
-
-
-        
       })
       .catch((err) => console.log(err));
   }, []);
@@ -52,6 +42,7 @@ function App() {
 
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(!isEditAvatarPopupOpen);
+    console.log("ggg");
   }
 
   function handleCardClick(card) {
@@ -123,23 +114,44 @@ function App() {
       .catch((err) => console.log(err));
   }
 
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Header />
+        <Switch>
+          <Route path="/sign-up">
+            <Register />
+          </Route>
 
-        <Main
-          onEditAvatar={handleEditAvatarClick}
-          onAddPlace={handleAddPlaceClick}
-          onEditProfile={handleEditProfileClick}
-          onCardClick={handleCardClick}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-        />
+          <Route path="/sign-in">
+            <Login onLogin={handleLogin} />
+          </Route>
 
+          <ProtectedRoute
+            path="/"
+            exact
+            component={Main}
+            loggedIn={loggedIn}
+            onEditAvatar={handleEditAvatarClick}
+            onAddPlace={handleAddPlaceClick}
+            onEditProfile={handleEditProfileClick}
+            onCardClick={handleCardClick}
+            cards={cards}
+            onCardLike={handleCardLike}
+            onCardDelete={handleCardDelete}
+          />
+
+          <Route>
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+          </Route>
+        </Switch>
         <Footer />
-
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}

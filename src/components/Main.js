@@ -6,6 +6,7 @@ import Card from "./Card.js";
 function Main(props) {
   const currentUser = useContext(CurrentUserContext);
 
+
   return (
     <main className="main">
       <section className="profile">

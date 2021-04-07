@@ -1,0 +1,10 @@
+.header__status {
+  margin-left: 10px;
+  color: white;
+}
+
+/* @media all and (max-width:320px) {
+  .header__status {
+    padding: 28px 0 32px 0;
+  }
+} */
