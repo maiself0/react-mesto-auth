@@ -1,21 +1,15 @@
 import logo from "../images/logo.svg";
-import { useLocation, Link, useHistory } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
-function Header() {
+function Header(props) {
   const location = useLocation();
-  const history = useHistory();
-
-  function signOut() {
-    
-    history.push('/sign-in')
-  }
 
   function headerStatus() {
     if (location.pathname === "/") {
       return (
         <div className="header__status-container">
-          <div className="header__status header__status_signed">email</div>
-          <div className="header__status header__status_signed" onClick={signOut}>Выйти</div>
+          <div className="header__status header__status_signed">{props.userEmail}</div>
+          <div className="header__status header__status_signed" onClick={props.onSignOut}>Выйти</div>
         </div>
       );
     }

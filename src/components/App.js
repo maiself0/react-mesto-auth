@@ -11,8 +11,9 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup.js";
 import ProtectedRoute from "./ProtectedRoute.js";
+import * as auth from "./auth";
 
-import { Route, Redirect, Switch } from "react-router-dom";
+import { Route, Redirect, Switch, useHistory } from "react-router-dom";
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
@@ -119,11 +120,52 @@ function App() {
   function handleLogin() {
     setLoggedIn(true);
   }
+  const history = useHistory();
+
+  useEffect(() => {
+    tokenCheck();
+  }, []);
+
+  useEffect(() => {
+    if (loggedIn) {
+      history.push("/ducks");
+    }
+  }, [loggedIn])
+
+  const [userEmail, setUserEmail] = useState('')
+
+  function tokenCheck() {
+    // если у пользователя есть токен в localStorage,
+    // эта функция проверит, действующий он или нет
+    if (localStorage.getItem("jwt")) {
+      const jwt = localStorage.getItem("jwt");
+      // здесь будем проверять токен
+      if (jwt) {
+        // проверим токен
+        auth.getContent(jwt).then((res) => {
+          if (res) {
+            console.log(res.data.email)
+            setUserEmail(res.data.email)
+            // авторизуем пользователя
+            setLoggedIn(true);
+            history.push("/");
+          }
+        });
+      }
+    }
+  }
+
+  function signOut() {
+    localStorage.removeItem('jwt')
+    history.push('/sign-in')
+    setUserEmail('')
+  }
+
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header />
+        <Header userEmail={userEmail} onSignOut={signOut}/>
         <Switch>
           <Route path="/sign-up">
             <Register />

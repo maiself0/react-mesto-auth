@@ -28,6 +28,7 @@ export default function Login(props) {
       .authorize(userData.password, userData.email)
       .then((data) => {
         if (data) {
+          console.log(data)
           setUserData({ email: "", password: "" });
           props.onLogin();
           history.push("/");
