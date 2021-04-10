@@ -1,16 +1,14 @@
-
-.register__button {
+.login__button {
   width: 100%;
   border: none;
   cursor: pointer;
-  margin-top: 30px;
   min-height: 50px;
   font-style: normal;
   font-weight: normal;
   font-size: 18px;
   line-height: 22px;
-  background-color: #FFFFFF;
+  background: #ffffff;
 }
-.register__button:hover {
+.login__button:hover {
   opacity: 0.85;
 }
