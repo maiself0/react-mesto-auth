@@ -7,6 +7,9 @@
 @import url(./blocks/header/__status/header__status.css);
 @import url(./blocks/header/__status-container/header__status-container.css);
 @import url(./blocks/header/__logo/header__logo.css);
+@import url(./blocks/header/__link/header__link.css);
+@import url(./blocks/header/link-out/header__link-out.css);
+
 
 @import url(./blocks/main/main.css);
 @import url(./blocks/profile/profile.css);
