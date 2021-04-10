@@ -1,6 +1,6 @@
-.header__status {
-  margin-left: 10px;
-  color: white;
+.header__status_signed:first-child {
+  margin-right: 24px;
+  color: #ffffff;
 }
 
 /* @media all and (max-width:320px) {

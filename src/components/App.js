@@ -11,7 +11,7 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup.js";
 import ProtectedRoute from "./ProtectedRoute.js";
-import * as auth from "./auth";
+import * as auth from "../utils/auth";
 
 import { Route, Redirect, Switch, useHistory } from "react-router-dom";
 
@@ -43,7 +43,6 @@ function App() {
 
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(!isEditAvatarPopupOpen);
-    console.log("ggg");
   }
 
   function handleCardClick(card) {
@@ -114,25 +113,31 @@ function App() {
       .then(closeAllPopups())
       .catch((err) => console.log(err));
   }
-
+  const history = useHistory();
   const [loggedIn, setLoggedIn] = useState(false);
 
-  function handleLogin() {
-    setLoggedIn(true);
+  function handleLogin(password, email) {
+    auth
+      .authorize(password, email)
+      .then((data) => {
+        if (data) {
+          setLoggedIn(true);
+          handleLogin();
+          history.push("/");
+          setUserEmail(email)
+        } 
+      })
+      .catch((err) => console.log(err));
   }
-  const history = useHistory();
 
   useEffect(() => {
     tokenCheck();
+    
   }, []);
 
-  useEffect(() => {
-    if (loggedIn) {
-      history.push("/ducks");
-    }
-  }, [loggedIn])
 
-  const [userEmail, setUserEmail] = useState('')
+
+  const [userEmail, setUserEmail] = useState("");
 
   function tokenCheck() {
     // если у пользователя есть токен в localStorage,
@@ -144,28 +149,26 @@ function App() {
         // проверим токен
         auth.getContent(jwt).then((res) => {
           if (res) {
-            console.log(res.data.email)
-            setUserEmail(res.data.email)
+            setUserEmail(res.data.email);
             // авторизуем пользователя
             setLoggedIn(true);
             history.push("/");
           }
-        });
+        }).catch((err) => console.log(err));
       }
     }
   }
 
   function signOut() {
-    localStorage.removeItem('jwt')
-    history.push('/sign-in')
-    setUserEmail('')
+    localStorage.removeItem("jwt");
+    history.push("/sign-in");
+    setUserEmail("");
   }
-
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header userEmail={userEmail} onSignOut={signOut}/>
+        <Header userEmail={userEmail} onSignOut={signOut} />
         <Switch>
           <Route path="/sign-up">
             <Register />
