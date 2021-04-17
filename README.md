@@ -4,3 +4,4 @@
 
 С запросами на авторизацию, регистрацию и проверку токена, которые работают через сервис `https://auth.nomoreparties.co`.
 
+https://maiself0.github.io/react-mesto-auth/#/
